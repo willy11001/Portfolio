@@ -1,0 +1,94 @@
+import { NextResponse } from "next/server";
+import nodemailer from "nodemailer";
+
+const smtpHost = process.env.SMTP_HOST || "smtp.gmail.com";
+const smtpPort = Number(process.env.SMTP_PORT || 587);
+const smtpUser = process.env.SMTP_USER || "tembewilliam98@gmail.com";
+const smtpPass = process.env.SMTP_PASS || "";
+const smtpTo = process.env.SMTP_TO || smtpUser;
+
+function isValidEmail(value: string) {
+    return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value);
+}
+
+export async function POST(request: Request) {
+    try {
+        const body = await request.json();
+        const { name, email, subject, message } = body ?? {};
+
+        if (!name || !email || !subject || !message) {
+            return NextResponse.json(
+                { error: "Please complete all fields before sending your message." },
+                { status: 400 }
+            );
+        }
+
+        if (typeof name !== "string" || typeof email !== "string" || typeof subject !== "string" || typeof message !== "string") {
+            return NextResponse.json(
+                { error: "Invalid form payload." },
+                { status: 400 }
+            );
+        }
+
+        if (!isValidEmail(email)) {
+            return NextResponse.json(
+                { error: "Please provide a valid email address." },
+                { status: 400 }
+            );
+        }
+
+        if (!smtpPass) {
+            return NextResponse.json(
+                {
+                    error:
+                        "SMTP is not configured. Add SMTP_PASS in your environment variables to enable email delivery.",
+                },
+                { status: 500 }
+            );
+        }
+
+        const transporter = nodemailer.createTransport({
+            host: smtpHost,
+            port: smtpPort,
+            secure: smtpPort === 465,
+            auth: {
+                user: smtpUser,
+                pass: smtpPass,
+            },
+            tls: {
+                rejectUnauthorized: false,
+            },
+        });
+
+        const emailHtml = `
+      <div style="font-family: Arial, sans-serif; line-height: 1.6; color: #111827;">
+        <h2 style="margin-bottom: 12px;">New portfolio message</h2>
+        <p><strong>Name:</strong> ${name}</p>
+        <p><strong>Email:</strong> ${email}</p>
+        <p><strong>Subject:</strong> ${subject}</p>
+        <div style="margin-top: 16px; padding: 16px; background: #f3f4f6; border-radius: 8px;">
+          ${message.replace(/\n/g, "<br />")}
+        </div>
+      </div>
+    `;
+
+        await transporter.sendMail({
+            from: `"Portfolio Contact" <${smtpUser}>`,
+            to: smtpTo,
+            replyTo: email,
+            subject: `Portfolio Contact: ${subject}`,
+            text: `Name: ${name}\nEmail: ${email}\n\n${message}`,
+            html: emailHtml,
+        });
+
+        return NextResponse.json({ success: true });
+    } catch (error) {
+        console.error("Contact email error:", error);
+        return NextResponse.json(
+            {
+                error: "Something went wrong while sending the message. Please try again later.",
+            },
+            { status: 500 }
+        );
+    }
+}
