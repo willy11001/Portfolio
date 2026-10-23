@@ -7,7 +7,7 @@ import SectionHeader from "@/components/ui/SectionHeader";
 const traits = [
   {
     icon: Lightbulb,
-    title: "Problem Solvers",
+    title: "Problem Solversss",
     description:
       "I approach technical challenges methodically — breaking complex problems into manageable components and exploring solutions iteratively.",
   },
