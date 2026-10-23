@@ -1,11 +1,17 @@
 import { NextResponse } from "next/server";
 import nodemailer from "nodemailer";
 
-const smtpHost = process.env.SMTP_HOST || "smtp.gmail.com";
-const smtpPort = Number(process.env.SMTP_PORT || 587);
-const smtpUser = process.env.SMTP_USER || "tembewilliam98@gmail.com";
-const smtpPass = process.env.SMTP_PASS || "";
-const smtpTo = process.env.SMTP_TO || smtpUser;
+function getSmtpConfig() {
+    const smtpUser = process.env.SMTP_USER || "your-email@gmail.com";
+
+    return {
+        host: process.env.SMTP_HOST || "smtp.gmail.com",
+        port: Number(process.env.SMTP_PORT || 587),
+        user: smtpUser,
+        pass: process.env.SMTP_PASS || "",
+        to: process.env.SMTP_TO || smtpUser,
+    };
+}
 
 function isValidEmail(value: string) {
     return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value);
@@ -15,6 +21,7 @@ export async function POST(request: Request) {
     try {
         const body = await request.json();
         const { name, email, subject, message } = body ?? {};
+        const { host: smtpHost, port: smtpPort, user: smtpUser, pass: smtpPass, to: smtpTo } = getSmtpConfig();
 
         if (!name || !email || !subject || !message) {
             return NextResponse.json(

@@ -20,7 +20,7 @@ export const profile = {
   cvFilename: "cv/cv.pdf",
   cvAvailable: true,
 
-  siteUrl: "https://willy11001-portfolio.vercel.app",
+  siteUrl: "https://portfolio-wiily11001s-projects.vercel.app/",
   metaDescription:
     "TEMBE FONGHO WILLIAM — Junior Full-Stack Software Engineer based in Yaoundé, Cameroon. Building web and mobile applications with React, Next.js, React Native, Node.js, and more.",
   ogImage: "/images/hero-illustration.jpg",

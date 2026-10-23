@@ -60,7 +60,10 @@ export default function Footer() {
           </a>
         </div>
 
-        <div className="mt-8 pt-6 border-t border-white/[0.04] text-center text-sm text-white/30">
+        <div className="mt-8 pt-6 border-t border-white/[0.04] text-center text-sm text-white/30 space-y-2">
+          <p className="break-all">
+            Portfolio URL: <a href={profile.siteUrl} target="_blank" rel="noopener noreferrer" className="text-blue-400 hover:text-blue-300 underline">{profile.siteUrl}</a>
+          </p>
           <p>
             © {year} TEMBE FONGHO WILLIAM. Built with Next.js, TypeScript &amp; Tailwind CSS.
           </p>
